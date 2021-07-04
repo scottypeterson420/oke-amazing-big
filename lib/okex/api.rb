@@ -4,8 +4,8 @@ module OKEX
       @client = client
     end
 
-    def balance(coin)
-      client.balance(coin)
+    def method_missing(m, *args, &block)
+      client.send(m, *args)
     end
 
     private

@@ -12,6 +12,11 @@ module OKEX
       _get("/api/account/v3/wallet/#{coin.code}")
     end
 
+    # name: sub account name
+    def sub_account(name)
+      _get("/api/account/v3/sub-account?sub-account=#{name}")
+    end
+
     private
 
     attr_reader :api_key, :api_secret, :passphrase
@@ -48,7 +53,7 @@ module OKEX
     def _resp(result)
       raise "Bad response from server" if result.code != 200
 
-      JSON.parse(result.body)
+      JSON.parse(result.body).with_indifferent_access
     end
   end
 end
