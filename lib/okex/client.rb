@@ -17,6 +17,10 @@ module OKEX
       _get("/api/account/v3/sub-account?sub-account=#{name}")
     end
 
+    def instruments
+      _get("/api/swap/v3/instruments")
+    end
+
     private
 
     attr_reader :api_key, :api_secret, :passphrase
@@ -53,7 +57,7 @@ module OKEX
     def _resp(result)
       raise "Bad response from server" if result.code != 200
 
-      JSON.parse(result.body).with_indifferent_access
+      JSON.parse(result.body)
     end
   end
 end
