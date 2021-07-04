@@ -1,3 +1,3 @@
-module Okex
-  VERSION = "0.1.0"
+module OKEX
+  VERSION = "0.1.2"
 end

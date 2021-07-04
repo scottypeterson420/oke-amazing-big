@@ -4,11 +4,11 @@ require "okex/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "okex"
-  spec.version       = Okex::VERSION
+  spec.version       = OKEX::VERSION
   spec.authors       = ["David Zhang"]
   spec.email         = ["v8os.com@gmail.com"]
 
-  spec.summary       = %q{OKEX API}
+  spec.summary       = %q{OKEX Ruby API}
   spec.description   = %q{RESTful API for okex.com}
   spec.homepage      = "https://github.com/daqing/okex"
   spec.license       = "MIT"
@@ -38,4 +38,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.17"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
+
+  spec.add_runtime_dependency "rest-client"
 end

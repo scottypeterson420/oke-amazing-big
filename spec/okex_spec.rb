@@ -1,5 +1,5 @@
-RSpec.describe Okex do
+RSpec.describe OKEX do
   it "has a version number" do
-    expect(Okex::VERSION).not_to be nil
+    expect(OKEX::VERSION).not_to be nil
   end
 end
