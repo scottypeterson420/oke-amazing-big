@@ -34,7 +34,23 @@ module OKEX
       _post("/api/swap/v3/order", param)
     end
 
+    # 市价平多
+    def close_long(instrument_id)
+      close_position(instrument_id, "long")
+    end
+
+    # 市价平空
+    def close_short(instrument_id)
+      close_position(instrument_id, "short")
+    end
+
     private
+
+    def close_position(instrument_id, direction)
+      param = {"instrument_id": instrument_id, "direction": direction}
+      
+      _post("/api/swap/v3/close_position", param)
+    end
 
     attr_reader :api_key, :api_secret, :passphrase
 
