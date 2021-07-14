@@ -8,62 +8,14 @@ module OKEX
       @passphrase = passphrase
     end
 
-    def balance(coin)
-      _get("/api/account/v3/wallet/#{coin.code}")
-    end
-
-    # name: sub account name
-    def sub_account(name)
-      _get("/api/account/v3/sub-account?sub-account=#{name}")
-    end
-
-    def instruments
-      _get("/api/swap/v3/instruments")
-    end
-
-    # 市价做空永续合约
-    # amount: 仓位开多少张
-    def short_swap(instrument_id, amount)
-      param = {
-        instrument_id: instrument_id.to_s,
-        size: amount.to_s,
-        type: "2",
-        order_type: "4",
-      }
-
-      _post("/api/swap/v3/order", param)
-    end
-
-    # 市价平多
-    def close_long(instrument_id)
-      close_position(instrument_id, "long")
-    end
-
-    # 市价平空
-    def close_short(instrument_id)
-      close_position(instrument_id, "short")
-    end
-
-    private
-
-    def close_position(instrument_id, direction)
-      param = {"instrument_id": instrument_id, "direction": direction}
-      
-      _post("/api/swap/v3/close_position", param)
-    end
-
-    attr_reader :api_key, :api_secret, :passphrase
-
-    HOST = "https://www.okex.com"
-
-    def _get(path)
+    def get(path)
       ts = timestamp
       sig = sign(ts, "GET", path)
 
       _resp(::Faraday.get(HOST + path, nil, headers(ts, sig)))
     end
 
-    def _post(path, payload)
+    def post(path, payload)
       payload_json = gen_payload(payload)
 
       ts = timestamp
@@ -77,6 +29,12 @@ module OKEX
         puts "[error] #{e.inspect}"
       end
     end
+
+    private
+
+    attr_reader :api_key, :api_secret, :passphrase
+
+    HOST = "https://www.okex.com"
 
     def gen_payload(payload)
       m = payload.map { |k, v| JSON.generate({k => v}, {space: ' '})}
