@@ -7,6 +7,10 @@ class OKEX::ApiV5
     client.get("/api/v5/public/instruments")
   end
 
+  def orders
+    client.get("/api/v5/account/positions")
+  end
+
   def short_swap(instid, amount)
     params = {
       "instId": instid,
