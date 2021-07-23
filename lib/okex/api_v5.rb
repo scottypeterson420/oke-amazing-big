@@ -8,7 +8,13 @@ class OKEX::ApiV5
   end
 
   def orders
-    client.get("/api/v5/account/positions")
+    resp = client.get("/api/v5/account/positions")
+    
+    if resp['code'].to_i == 0 && resp['data'].size > 0
+      return resp['data'].map {|params| OKEX::Order.new(params)}
+    end
+
+    []
   end
 
   def short_swap(instid, amount)

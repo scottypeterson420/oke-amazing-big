@@ -1,4 +1,6 @@
 require 'time'
+require 'base64'
+require 'json'
 
 module OKEX
   class Client
