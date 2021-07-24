@@ -1,14 +1,15 @@
 class OKEX::ApiV5
-  def initialize(client)
+  def initialize(client, host)
     @client = client
+    @host = host
   end
 
   def instruments
-    client.get("/api/v5/public/instruments")
+    client.get(host, "/api/v5/public/instruments?instType=SWAP")
   end
 
   def orders
-    resp = client.get("/api/v5/account/positions")
+    resp = client.get(host, "/api/v5/account/positions")
     
     if resp['code'].to_i == 0 && resp['data'].size > 0
       return resp['data'].map {|params| OKEX::Order.new(params)}
@@ -27,7 +28,7 @@ class OKEX::ApiV5
       "sz": "1"
     }
 
-    client.post("/api/v5/trade/order", params)
+    client.post(host, "/api/v5/trade/order", params)
   end
 
   def close_long(instid)
@@ -40,7 +41,7 @@ class OKEX::ApiV5
 
   private
 
-  attr_reader :client
+  attr_reader :client, :host
 
   def close_position(instid, direction)
     params = {
@@ -49,6 +50,6 @@ class OKEX::ApiV5
       "posSide": direction
     }
 
-    client.post("/api/v5/trade/close-position", params)
+    client.post(host, "/api/v5/trade/close-position", params)
   end
 end

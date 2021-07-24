@@ -1,6 +1,7 @@
 require 'time'
 require 'base64'
 require 'json'
+require 'faraday'
 
 module OKEX
   class Client
@@ -10,33 +11,25 @@ module OKEX
       @passphrase = passphrase
     end
 
-    def get(path)
+    def get(host, path)
       ts = timestamp
       sig = sign(ts, "GET", path)
 
-      _resp(::Faraday.get(HOST + path, nil, headers(ts, sig)))
+      _resp(Faraday.get(host + path, nil, headers(ts, sig)))
     end
 
-    def post(path, payload)
+    def post(host, path, payload)
       payload_json = gen_payload(payload)
 
       ts = timestamp
       sig = sign(ts, "POST", path + payload_json)
 
-      begin
-        conn = ::Faraday.new(HOST + path, :ssl => {:verify => false})
-        result = conn.post(HOST + path, payload_json, headers(ts, sig))
-        _resp(result)
-      rescue => e
-        puts "[error] #{e.inspect}"
-      end
+      _resp(Faraday.post(host + path, payload_json, headers(ts, sig)))
     end
 
     private
 
     attr_reader :api_key, :api_secret, :passphrase
-
-    HOST = "https://www.okex.com"
 
     def gen_payload(payload)
       m = payload.map { |k, v| JSON.generate({k => v}, {space: ' '})}

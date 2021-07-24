@@ -4,8 +4,7 @@ require "okex/api_v5"
 require "okex/client"
 require "okex/coin"
 require "okex/order"
-require "openssl"
-require "faraday"
+require "okex/host"
 
 module OKEX
   class Error < StandardError; end
