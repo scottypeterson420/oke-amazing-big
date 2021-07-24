@@ -1,12 +1,13 @@
 PATH
   remote: .
   specs:
-    okex (0.2.3)
+    okex (0.2.5)
       faraday (~> 1.5)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    byebug (11.1.3)
     diff-lcs (1.4.4)
     faraday (1.5.0)
       faraday-em_http (~> 1.0)
@@ -47,6 +48,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.17)
+  byebug (~> 11.1)
   okex!
   rake (~> 10.0)
   rspec (~> 3.0)

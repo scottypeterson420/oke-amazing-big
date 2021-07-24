@@ -8,11 +8,21 @@ class OKEX::ApiV5
     client.get(host, "/api/v5/public/instruments?instType=SWAP")
   end
 
-  def orders
+  def account_orders
     resp = client.get(host, "/api/v5/account/positions")
     
+    if resp['success']
+      return resp['data'].map {|params| OKEX::AccountOrder.new(params)}
+    end
+
+    []
+  end
+
+  def trade_orders(instrument_id)
+    resp = client.get(host, "/api/v5/trade/order?instId=#{instrument_id}")
+    
     if resp['code'].to_i == 0 && resp['data'].size > 0
-      return resp['data'].map {|params| OKEX::Order.new(params)}
+      return resp['data'].map {|params| OKEX::TradeOrder.new(params)}
     end
 
     []
@@ -31,21 +41,21 @@ class OKEX::ApiV5
     client.post(host, "/api/v5/trade/order", params)
   end
 
-  def close_long(instid)
-    close_position(instid, "long")
+  def close_long(instrument_id)
+    close_position(instrument_id, "long")
   end
 
-  def close_short(instid)
-    close_position(instid, "short")
+  def close_short(instrument_id)
+    close_position(instrument_id, "short")
   end
 
   private
 
   attr_reader :client, :host
 
-  def close_position(instid, direction)
+  def close_position(instrument_id, direction)
     params = {
-      "instId": instid,
+      "instId": instrument_id,
       "mgnMode": "cross",
       "posSide": direction
     }

@@ -30,6 +30,11 @@ module OKEX
       dig("liqPx").to_f
     end
 
+    # 最新成交价
+    def last_price
+      dig("last").to_f
+    end
+
     # 持仓方向
     def position_side
       side = dig("posSide")
@@ -38,9 +43,32 @@ module OKEX
       end
     end
 
+    def long?
+      position_side == POS_LONG
+    end
+
+    def short?
+      position_side == POS_SHORT
+    end
+
+    # 开仓方向名称
+    def position_name
+      case position_side
+      when POS_SHORT
+        '空'
+      when POS_LONG
+        '多'
+      end
+    end
+
     # 未实现收益
     def upl
       dig("upl").to_f
+    end
+
+    # 持仓张数
+    def pos
+      dig("pos").to_i
     end
 
     private

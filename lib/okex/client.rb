@@ -60,7 +60,14 @@ module OKEX
     end
 
     def _resp(result)
-      JSON.parse(result.body)
+      result = JSON.parse(result.body)
+      
+      code = result['code'].to_i
+      if code == 0 && result['msg'].empty?
+        return {'success' => true, 'data' => result['data']}
+      else
+        return {'success' => false, 'code' => code, 'msg' => result['msg']}
+      end
     end
   end
 end
