@@ -12,19 +12,27 @@ module OKEX
     end
 
     def get(host, path)
+      url = host + path
       ts = timestamp
       sig = sign(ts, "GET", path)
+      _h = headers(ts, sig)
 
-      _resp(Faraday.get(host + path, nil, headers(ts, sig)))
+      puts "---> GET: url=#{url}, headers=#{_h}" if ENV['OKEX_DEBUG'].to_i > 0
+
+      _resp(Faraday.get(url, nil, _h))
     end
 
     def post(host, path, payload)
       payload_json = gen_payload(payload)
 
+      url = host + path
       ts = timestamp
       sig = sign(ts, "POST", path + payload_json)
+      _h = headers(ts, sig)
 
-      _resp(Faraday.post(host + path, payload_json, headers(ts, sig)))
+      puts "---> POST: url=#{url}, payload=#{payload_json}, headers=#{_h}" if ENV['OKEX_DEBUG'].to_i > 0
+
+      _resp(Faraday.post(url, payload_json, _h))
     end
 
     private
@@ -64,10 +72,10 @@ module OKEX
       
       code = result['code'].to_i
       if code == 0 && result['msg'].empty?
-        return {'success' => true, 'data' => result['data']}
-      else
-        return {'success' => false, 'code' => code, 'msg' => result['msg']}
+        return result['data']
       end
+
+      raise OKEX::ApiError.new(code, result['data'], result['msg'])
     end
   end
 end

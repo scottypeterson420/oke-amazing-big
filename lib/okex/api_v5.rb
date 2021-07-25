@@ -14,13 +14,23 @@ class OKEX::ApiV5
       url += "?instId=#{inst_id}"
     end
 
-    resp = client.get(host, url)
-    
-    if resp['success']
-      return resp['data'].map {|params| OKEX::Order.new(params)}
-    end
+    data = client.get(host, url)
 
-    []
+    data.map {|params| OKEX::Order.new(params)}
+  end
+
+  def balance(ccy, round)
+    data = client.get(host, "/api/v5/account/balance?ccy=#{ccy}")
+
+    details = data[0]['details'][0]
+
+    OKEX::Balance.new(
+      details['ccy'],
+      dig_round(details, 'cashBal', round),
+      dig_round(details, 'avalEq', round),
+      dig_round(details, 'frozenBal', round),
+      dig_round(details, 'upl', round)
+    )
   end
 
   def long_swap(instid, amount)
@@ -49,6 +59,22 @@ class OKEX::ApiV5
     client.post(host, "/api/v5/trade/order", params)
   end
 
+  # # 开多带止损
+  # def long_swap_stop(instid, amount, stop_price)
+  #   params = {
+  #     "instId": instid,
+  #     "tdMode": "cross",
+  #     "side": "buy",
+  #     "posSide": "long",
+  #     "ordType": "conditional",
+  #     "sz": amount.to_s,
+  #     "slTriggerPx": stop_price.to_s,
+  #     "slOrdPx": "-1", # 执行市价止损
+  #   }
+
+  #   client.post(host, "/api/v5/trade/order-algo", params)
+  # end
+
   def close_long(instrument_id)
     close_position(instrument_id, "long")
   end
@@ -58,16 +84,15 @@ class OKEX::ApiV5
   end
 
   def max_size(instrument_id)
-    result = client.get(host, "/api/v5/account/max-size?instId=#{instrument_id}&tdMode=cross")
+    data = client.get(host, "/api/v5/account/max-size?instId=#{instrument_id}&tdMode=cross")
     
     ret = OKEX::MaxSize.new(-1, -1)
-    if result['success']
-      el = result['data'][0]
-      if el.present? && el['maxBuy'].to_i > 0 && el['maxSell'].to_i > 0
-        ret = OKEX::MaxSize.new(el['maxBuy'].to_i, el['maxSell'].to_i)
-      end
+
+    el = data[0]
+    if el.present? && el['maxBuy'].to_i > 0 && el['maxSell'].to_i > 0
+      ret = OKEX::MaxSize.new(el['maxBuy'].to_i, el['maxSell'].to_i)
     end
-    
+
     ret
   end
 
@@ -83,5 +108,9 @@ class OKEX::ApiV5
     }
 
     client.post(host, "/api/v5/trade/close-position", params)
+  end
+
+  def dig_round(obj, key, round)
+    obj[key].to_f.round(round)
   end
 end

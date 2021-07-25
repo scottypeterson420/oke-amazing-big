@@ -1,6 +1,6 @@
 # okex
 
-This is the V3 API ruby lib for okex.com
+This is the V5 API ruby lib for okex.com
 
 ## Installation
 
@@ -20,6 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
+Set `OKEX_DEBUG` environment flag to 1 to print debug messages.
 
 ## Development
 
