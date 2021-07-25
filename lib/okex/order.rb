@@ -7,6 +7,7 @@ module OKEX
       @params = params
     end
 
+    # 合约名称，例如 BTC-USDT-SWAP
     def inst_id
       dig("instId")
     end

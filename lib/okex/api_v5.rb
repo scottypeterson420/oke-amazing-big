@@ -23,6 +23,19 @@ class OKEX::ApiV5
     []
   end
 
+  def long_swap(instid, amount)
+    params = {
+      "instId": instid,
+      "tdMode": "cross",
+      "side": "buy",
+      "posSide": "long",
+      "ordType": "market",
+      "sz": amount.to_s,
+    }
+
+    client.post(host, "/api/v5/trade/order", params)
+  end
+
   def short_swap(instid, amount)
     params = {
       "instId": instid,
@@ -30,7 +43,7 @@ class OKEX::ApiV5
       "side": "sell",
       "posSide": "short",
       "ordType": "market",
-      "sz": "1"
+      "sz": amount.to_s,
     }
 
     client.post(host, "/api/v5/trade/order", params)
