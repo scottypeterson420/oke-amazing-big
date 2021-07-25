@@ -8,21 +8,16 @@ class OKEX::ApiV5
     client.get(host, "/api/v5/public/instruments?instType=SWAP")
   end
 
-  def account_orders
-    resp = client.get(host, "/api/v5/account/positions")
-    
-    if resp['success']
-      return resp['data'].map {|params| OKEX::AccountOrder.new(params)}
+  def orders(inst_id=nil)
+    url = "/api/v5/account/positions"
+    if inst_id.present?
+      url += "?instId=#{inst_id}"
     end
 
-    []
-  end
-
-  def trade_orders(instrument_id)
-    resp = client.get(host, "/api/v5/trade/order?instId=#{instrument_id}")
+    resp = client.get(host, url)
     
-    if resp['code'].to_i == 0 && resp['data'].size > 0
-      return resp['data'].map {|params| OKEX::TradeOrder.new(params)}
+    if resp['success']
+      return resp['data'].map {|params| OKEX::Order.new(params)}
     end
 
     []
@@ -47,6 +42,20 @@ class OKEX::ApiV5
 
   def close_short(instrument_id)
     close_position(instrument_id, "short")
+  end
+
+  def max_size(instrument_id)
+    result = client.get(host, "/api/v5/account/max-size?instId=#{instrument_id}&tdMode=cross")
+    
+    ret = OKEX::MaxSize.new(-1, -1)
+    if result['success']
+      el = result['data'][0]
+      if el.present? && el['maxBuy'].to_i > 0 && el['maxSell'].to_i > 0
+        ret = OKEX::MaxSize.new(el['maxBuy'].to_i, el['maxSell'].to_i)
+      end
+    end
+    
+    ret
   end
 
   private

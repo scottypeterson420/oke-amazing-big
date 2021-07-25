@@ -7,7 +7,7 @@ module OKEX
       @params = params
     end
 
-    def instrument_id
+    def inst_id
       dig("instId")
     end
     
@@ -69,6 +69,16 @@ module OKEX
     # 持仓张数
     def pos
       dig("pos").to_i
+    end
+
+    # 是否正在持仓
+    def open?
+      pos > 0
+    end
+
+    # 已经平仓
+    def closed?
+      pos == 0
     end
 
     private
