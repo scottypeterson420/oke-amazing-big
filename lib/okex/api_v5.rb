@@ -96,6 +96,12 @@ class OKEX::ApiV5
     ret
   end
 
+  def current_leverage(inst_id)
+    data = client.get(host, "/api/v5/account/leverage-info?instId=#{inst_id}&mgnMode=cross")
+
+    data[0]['lever'].to_i
+  end
+
   private
 
   attr_reader :client, :host
