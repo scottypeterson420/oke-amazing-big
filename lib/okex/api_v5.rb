@@ -59,22 +59,6 @@ class OKEX::ApiV5
     client.post(host, "/api/v5/trade/order", params)
   end
 
-  # # 开多带止损
-  # def long_swap_stop(instid, amount, stop_price)
-  #   params = {
-  #     "instId": instid,
-  #     "tdMode": "cross",
-  #     "side": "buy",
-  #     "posSide": "long",
-  #     "ordType": "conditional",
-  #     "sz": amount.to_s,
-  #     "slTriggerPx": stop_price.to_s,
-  #     "slOrdPx": "-1", # 执行市价止损
-  #   }
-
-  #   client.post(host, "/api/v5/trade/order-algo", params)
-  # end
-
   def close_long(instrument_id)
     close_position(instrument_id, "long")
   end
@@ -100,6 +84,24 @@ class OKEX::ApiV5
     data = client.get(host, "/api/v5/account/leverage-info?instId=#{inst_id}&mgnMode=cross")
 
     data[0]['lever'].to_i
+  end
+
+  # 设置止损价格
+  def set_stop_loss(inst_id, posSide, sz, price)
+    side = (posSide == OKEX::Order::POS_LONG) ? "sell" : "buy"
+
+    params = {
+      "instId": inst_id,
+      "tdMode": "cross",
+      "side": side,
+      "posSide": posSide.to_s,
+      "sz": sz.to_s,
+      "ordType": "conditional",
+      "slTriggerPx": price.to_s,
+      "slOrdPx": "-1"
+    }
+
+    client.post(host, "/api/v5/trade/order-algo", params)
   end
 
   private
