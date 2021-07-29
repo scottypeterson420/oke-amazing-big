@@ -87,6 +87,10 @@ class OKEX::ApiV5
   end
 
   # 设置止损价格
+  # @param inst_id [String] 合约名称
+  # @param posSide [String] 持仓方向
+  # @param sz [Integer] 持仓数量（张）
+  # @param price [Float] 止损价格
   def set_stop_loss(inst_id, posSide, sz, price)
     side = (posSide == OKEX::Order::POS_LONG) ? "sell" : "buy"
 
@@ -102,6 +106,15 @@ class OKEX::ApiV5
     }
 
     client.post(host, "/api/v5/trade/order-algo", params)
+  end
+
+  # 查询当前设置的止损价格
+  # @param inst_id [String] 合约名称
+  def stop_loss_price(inst_id)
+    result = client.get(host, "/api/v5/trade/orders-algo-pending?instId=#{inst_id}&instType=SWAP&ordType=conditional")
+    return result[0]["slTriggerPx"].to_i if result.size == 1
+
+    raise "invalid result: #{result.inspect}"
   end
 
   private
