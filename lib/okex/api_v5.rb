@@ -112,6 +112,8 @@ class OKEX::ApiV5
   # @param inst_id [String] 合约名称
   def stop_loss_price(inst_id)
     result = client.get(host, "/api/v5/trade/orders-algo-pending?instId=#{inst_id}&instType=SWAP&ordType=conditional")
+
+    return -1 if result.empty?
     return result[0]["slTriggerPx"].to_i if result.size == 1
 
     raise "invalid result: #{result.inspect}"
