@@ -119,6 +119,30 @@ class OKEX::ApiV5
     raise "invalid result: #{result.inspect}"
   end
 
+  # 查询当前止损订单的ID
+  # 可用于后续取消止损订单
+  # @param inst_id [String] 合约名称
+  def algo_order_id(inst_id)
+    result = client.get(host, "/api/v5/trade/orders-algo-pending?instId=#{inst_id}&instType=SWAP&ordType=conditional")
+
+    return "" if result.empty?
+    return result[0]["algoId"] if result.size == 1
+
+    raise "invalid result: #{result.inspect}"
+  end
+
+  # 撤销委托单
+  # @param algo_id [String] 策略委托单ID
+  # @param inst_id [String] 合约ID
+  def cancel_algo_order(algo_id, inst_id)
+    params = {
+      "algoId": algo_id,
+      "instId": inst_id
+    }
+    
+    client.post(host, "/api/v5/trade/cancel-algos", [params])
+  end
+
   private
 
   attr_reader :client, :host

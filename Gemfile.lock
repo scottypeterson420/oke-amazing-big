@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    okex (0.3.4)
+    okex (0.3.6)
       faraday (~> 1.5)
 
 GEM

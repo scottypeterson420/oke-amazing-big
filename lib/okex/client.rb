@@ -23,8 +23,15 @@ module OKEX
     end
 
     def post(host, path, payload)
-      payload_json = gen_payload(payload)
-
+      if payload.is_a?(Array)
+        _json = payload.map do |hx|
+          gen_payload(hx)
+        end
+        payload_json = "[#{_json.join(",")}]"
+      else
+        payload_json = gen_payload(payload)
+      end
+      
       url = host + path
       ts = timestamp
       sig = sign(ts, "POST", path + payload_json)
