@@ -69,7 +69,7 @@ class OKEX::ApiV5
 
   def max_size(instrument_id)
     data = client.get(host, "/api/v5/account/max-size?instId=#{instrument_id}&tdMode=cross")
-    
+
     ret = OKEX::MaxSize.new(-1, -1)
 
     el = data[0]
@@ -114,7 +114,7 @@ class OKEX::ApiV5
     result = client.get(host, "/api/v5/trade/orders-algo-pending?instId=#{inst_id}&instType=SWAP&ordType=conditional")
 
     return -1 if result.empty?
-    return result[0]["slTriggerPx"].to_i if result.size == 1
+    return result[0]["slTriggerPx"].to_f if result.size == 1
 
     raise "invalid result: #{result.inspect}"
   end
@@ -139,7 +139,7 @@ class OKEX::ApiV5
       "algoId": algo_id,
       "instId": inst_id
     }
-    
+
     client.post(host, "/api/v5/trade/cancel-algos", [params])
   end
 
